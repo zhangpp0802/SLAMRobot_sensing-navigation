@@ -1,0 +1,6 @@
+wheel_radius: 0.033
+wheel_base: 0.16
+collision_radius: 0.11
+motor_cmd_to_radsec: 0.024
+motor_cmd_max: 256
+encoder_ticks_to_rad: 0.00153398078

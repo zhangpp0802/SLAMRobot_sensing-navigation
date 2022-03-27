@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="nusim" default="true" doc="true: launch simulator and landmark detection on localhost, false: launch landmark detection on the turtlebot"/>
+	
+	<param name="angle_std" value="0.15"/>
+	<param name="cluster_thresh" value="0.3"/>
+	<param name="min_circle_rad" value="0.04"/>
+	<param name="max_circle_rad" value="0.10"/>
+	<param name="min_cluster_num" value="5"/>
+	<param name="min_angle" value="80"/>
+	<param name="max_angle" value="160"/>
+	
+	<group if="$(arg nusim)">
+		<machine name="turtlebot" address="localhost" env-loader="/home/ubuntu/loader.sh"/>
+		<include file="$(find nusim)/launch/nusim.launch"/>
+	</group>
+	
+	<group unless="$(arg nusim)">
+		<machine name="turtlebot" address="turtlebot.local" user="ubuntu" env-loader="/home/ubuntu/loader.sh"/>
+		<include file="$(find nuturtle_control)/launch/start_robot.launch">
+			<arg name="circle" value="false"/>
+		</include>
+		<node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 1 base_scan odo" />
+	</group>
+		
+	<node machine="turtlebot" pkg="nuslam" type="landmarks" name="landmarks"/>
+	
+</launch>

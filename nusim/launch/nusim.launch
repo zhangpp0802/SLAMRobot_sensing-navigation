@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="use_rviz" default="true" doc="if true, launch rviz"/>
+	<include file="$(find nuturtle_description)/launch/load.launch">
+			<arg name="use_rviz" value="false"/>
+	</include>
+	<arg name = "config_file" default = "(find nusim)/config/basic_world.yaml" doc = "load users yaml file"/>
+	<rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="broadcasterr" args="0 0 0 0 0 0 1 odo base_footprint"/>
+	<node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="turtlebot3_teleop_keyboard" output="screen"/>
+	<node pkg="nusim" type="obsnusim" name="obsnusim"/>
+	<group if="$(arg use_rviz)">
+		<node name="rviz" pkg="rviz" type="rviz" args="-d '$(find nusim)/config/nusim.rviz'"/>
+	</group>
+</launch>

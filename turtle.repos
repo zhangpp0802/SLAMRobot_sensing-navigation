@@ -1,0 +1,5 @@
+repositories:
+  src:
+    type: git
+    url: git@github.com:ME495-Navigation/slam-project-zhangpp0802.git
+    version: main

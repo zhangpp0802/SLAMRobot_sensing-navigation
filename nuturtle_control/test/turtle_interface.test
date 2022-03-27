@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="nuturtle_control" type="turtle_interface" name="turtle_interface" output="screen"/>
+	<test pkg="nuturtle_control" type="turtle_interface_test" test-name="turtle_interface_test"/>
+</launch>

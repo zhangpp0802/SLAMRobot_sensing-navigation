@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="robot" default="nusim" doc="connect turtlebot or nusim" />
+    <arg name="use_rviz" default="true" doc="if using rivz" />
+    <arg name="cmd_src" default="teleop" doc="circle or teleop" />
+
+    <rosparam command="load" file="$(find nusim)/config/basic_world.yaml" />
+    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+
+    <param name="robot_description" command="$(find xacro)/xacro $(find nuturtle_description)/urdf/turtlebot3_burger.urdf.xacro" /> 
+	
+    <include file = "$(find nuturtle_control)/launch/basic_remote.launch" if = "$(eval robot != 'nusim')">
+        <machine name="turtlebot" address="turtlebot.local" user="ubuntu" env-loader="/home/ubuntu/loader.sh"/>
+        <include file="$(find nuturtle_control)/launch/basic_remote.launch">
+            <arg name="robot" value="$(arg robot)"/>
+        </include>
+        <node machine="turtlebot" pkg="turtlelib" type="odometry" name="odometry"/>
+        <node machine="turtlebot" pkg="nuturtle_control" type="turtle_interface" name="turtle_interface"/>
+    </include>
+
+    <node pkg="nuturtle_control" type="odometry" name="odometry" if = "$(eval robot == 'nusim')"/>
+	<node pkg="nuturtle_control" type="turtle_interface" name="turtle_interface" if = "$(eval robot == 'nusim')"/>
+    <node name = "obsnusim" pkg = "nusim" type = "obsnusim" output = "screen" if = "$(eval robot == 'nusim')" />
+	
+    <node pkg="nuturtle_control" type="circle" name="circle" if = "$(eval cmd_src == 'circle')">
+        <param name="~circle_radius" value="0.3"/>
+        <param name="~speed" value="0.08"/>
+    </node>
+
+	<node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="turtlebot3_teleop_keyboard" if = "$(eval cmd_src == 'teleop')" output="screen"/>
+	
+	
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> 
+    <group if="$(arg use_rviz)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d '$(find nusim)/config/nusim.rviz'"/>
+        <node pkg="tf2_ros" type="static_transform_publisher" name="broadcasterr" args="0 0 0 0 0 0 1 turtle odom"/>
+    </group>
+</launch>
